@@ -1,0 +1,26 @@
+# Virtualenv — 1.1GB, rebuild from requirements.txt
+.venv/
+venv/
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+
+# Assistant state. These are derived from a personal Obsidian vault —
+# vector embeddings of note contents, learned writing style, note structure
+# and user preferences. Personal data, and regenerated on use, so it does
+# not belong in the repository.
+memory/
+logs/
+scratch/
+
+# A pasted chat transcript, personal
+CHAT.md
+
+# Local config: holds the machine-specific Obsidian vault path.
+# Copy config.example.json to config.json and edit it.
+config.json
+
+# Atomic-write leftovers and scratch runners
+*.tmp.*
+_tmp_*

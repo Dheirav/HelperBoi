@@ -1,0 +1,61 @@
+{
+  "mode": "default",
+  "obsidian_vault_path": "C:/path/to/your/Obsidian/vault",
+  "active_profile": "default",
+  "profiles": {
+    "default": {
+      "enabled_models": ["qwen2.5-coder:7b", "llama3"],
+      "memory_limit_gb": 8,
+      "behavior_flags": {
+        "auto_summarize": true,
+        "auto_polish": true,
+        "context_linking": false,
+        "tts": false
+      }
+    },
+    "coding": {
+      "enabled_models": ["qwen2.5-coder:7b", "qwen2.5-coder:14b"],
+      "memory_limit_gb": 10,
+      "behavior_flags": {
+        "auto_summarize": false,
+        "auto_polish": false,
+        "context_linking": false,
+        "tts": false
+      }
+    },
+    "note_refactor": {
+      "enabled_models": ["qwen2.5-coder:7b", "llama3"],
+      "memory_limit_gb": 10,
+      "behavior_flags": {
+        "auto_summarize": true,
+        "auto_polish": true,
+        "context_linking": true,
+        "tts": false
+      }
+    },
+    "gaming": {
+      "enabled_models": [],
+      "memory_limit_gb": 2,
+      "behavior_flags": {
+        "auto_summarize": false,
+        "auto_polish": false,
+        "context_linking": false,
+        "tts": false
+      }
+    }
+  },
+  "models": {
+    "qwen2.5-coder:7b": {
+      "ram_gb": 4.7,
+      "fallback": null
+    },
+    "qwen2.5-coder:14b": {
+      "ram_gb": 9.0,
+      "fallback": "qwen2.5-coder:7b"
+    },
+    "llama3": {
+      "ram_gb": 4.7,
+      "fallback": "qwen2.5-coder:7b"
+    }
+  }
+}
