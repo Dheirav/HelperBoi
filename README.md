@@ -27,7 +27,7 @@ A modular, privacy-respecting, performance-optimized personal AI assistant built
 - Vault-wide content suggestions (semantic linking) **[✔️ Full: smart_link.py, context-aware]**
 - Daily/weekly refactor schedules **[✔️ Full: refactor.py, memory/refactor_schedule.json, CLI: refactor-schedule, refactor-jobs, refactor-remove, refactor-scheduler]**
 - Git-based vault backup & auto push **[✔️ Full: backup.py, CLI command, PAT/SSH, modular]**
-- Embed vector search (via local embeddings) **[Planned]**
+- Embed vector search (via local embeddings) **[✔️ Full: vector_search.py, sentence-transformers with a TF-IDF fallback, forced offline; auto-injected into prompts by rag_context.py]**
 
 ---
 
