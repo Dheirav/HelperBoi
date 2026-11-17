@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "frozen": false,
+  "frozen": true,
   "note": "Version 1 is frozen when its commit hash is written into docs/EVAL.md. After that, tasks are added in a new version, never edited or removed.",
   "fixture": {
     "root": "sandbox",

@@ -2,7 +2,7 @@
 
 Status: version 1, written 2026-11-18, before any run. It is frozen when the commit hash of this file and `eval/tasks.json` is written in the "Frozen at" line below. After that nothing is edited. A change means a new version with a date, and the old one stays.
 
-Frozen at: (not frozen yet)
+Frozen at: commit 2262457, 2026-11-18. The content of this file and of eval/tasks.json is the one in that commit. The commit that records the freeze changes only this line and the `frozen` flag in eval/tasks.json. Check with: `git diff 2262457 HEAD -- docs/EVAL.md eval/tasks.json`.
 
 ## What this evaluation is for
 
