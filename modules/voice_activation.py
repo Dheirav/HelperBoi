@@ -1,5 +1,5 @@
 """
-Voice Activation Module for HelperBoi / Jarvis
+Voice Activation Module for HelperBoi
 Provides:
 - Speech-to-Text (STT) via SpeechRecognition. The recognizer it calls is Google's
   web API (recognize_google), so the audio leaves the machine; it is not offline.
@@ -18,7 +18,7 @@ import threading
 
 from modules.platform_compat import IS_WSL, speak_with_windows_voice
 
-logger = logging.getLogger("jarvis.voice")
+logger = logging.getLogger("helperboi.voice")
 
 # Try importing pyttsx3 for TTS
 _TTS_ENGINE = None
@@ -145,7 +145,7 @@ def listen_for_wake_word(wake_words=("jarvis", "hey jarvis", "hi jarvis"), timeo
     """
     Listen continuously for a wake-word phrase. Returns True if heard.
     """
-    print(f"[👂 Wake-Word Listener Active]: Say '{', '.join(wake_words)}' to wake Jarvis...")
+    print(f"[👂 Wake-Word Listener Active]: Say '{', '.join(wake_words)}' to wake the assistant...")
     text = listen_for_speech(timeout=timeout, phrase_time_limit=4, prompt_msg="Listening for wake-word...")
     if text:
         text_lower = text.lower()
@@ -162,7 +162,7 @@ def start_voice_mode(on_command_callback=None):
     Launch interactive voice assistant shell.
     """
     speak("Voice mode activated. How can I help you?", block=False)
-    print("\n==================== JARVIS VOICE MODE ====================")
+    print("\n==================== HELPERBOI VOICE MODE ====================")
     print("🎤 Say 'Jarvis' or speak a command directly.")
     print("Type 'exit' or press Ctrl+C to return to text mode.")
     print("===========================================================\n")
@@ -182,7 +182,7 @@ def start_voice_mode(on_command_callback=None):
                 print(f"[🤖 Executing Command]: {command_text}")
                 response = on_command_callback(command_text)
                 if response:
-                    print(f"\n[🤖 Jarvis Response]: {response}\n")
+                    print(f"\n[🤖 HelperBoi Response]: {response}\n")
                     speak(response, block=True)
         except KeyboardInterrupt:
             speak("Exiting voice mode.", block=True)

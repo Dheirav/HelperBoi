@@ -1,5 +1,5 @@
 """
-New Tools Extension Module for HelperBoi / Jarvis
+New Tools Extension Module for HelperBoi
 Provides:
 - read_file: Safely view file contents
 - write_file: Safely write content to a file with workspace path enforcement
@@ -255,7 +255,7 @@ def open_app(app_name):
     # 4. Capability Gap Failure - App could not be located!
     return (
         f"[CAPABILITY_GAP: open_app] Could not locate installed desktop app '{app_name_raw}'.\n"
-        f"Jarvis could not find a Windows URI scheme, PATH executable, or Registry path for '{app_name_raw}'."
+        f"HelperBoi could not find a Windows URI scheme, PATH executable, or Registry path for '{app_name_raw}'."
     )
 
 
@@ -511,7 +511,7 @@ def handle_in_app_action(app_name, sub_action, target):
             f"You can create a note in Obsidian with your contacts and group links:\n"
             f"- Niveditha: +917358114173\n"
             f"- Study Group: https://chat.whatsapp.com/XYZ123\n"
-            f"Jarvis will automatically read your notes and open chats/groups directly by name!"
+            f"HelperBoi will automatically read your notes and open chats/groups directly by name!"
         )
 
     # Spotify: supports search deep-link

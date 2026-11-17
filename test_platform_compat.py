@@ -193,7 +193,7 @@ class RealWindowsFromWSL(unittest.TestCase):
         self.assertTrue(home and os.path.isdir(home), home)
 
     def test_windows_voice_writes_a_wav_without_playing_it(self):
-        text = "Jarvis speech check. It's got quotes, \"double\" ones too, and an accent: café."
+        text = "HelperBoi speech check. It's got quotes, \"double\" ones too, and an accent: café."
         with tempfile.TemporaryDirectory() as d:
             out = os.path.join(d, "say.wav")
             self.assertTrue(pc.speak_with_windows_voice(text, output_wav=out))

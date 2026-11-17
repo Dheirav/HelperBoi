@@ -143,7 +143,7 @@ def show_feature_toggle_menu():
 def show_preferences_menu():
     prefs = mem.get_preferences()
 
-    table = Table(title="⚙️ Jarvis Preferences & Settings", header_style="bold magenta", border_style="bright_blue")
+    table = Table(title="⚙️ HelperBoi Preferences & Settings", header_style="bold magenta", border_style="bright_blue")
     table.add_column("Option #", style="bold yellow", justify="center")
     table.add_column("Setting", style="bold cyan")
     table.add_column("Current Value", style="bold white")
@@ -297,8 +297,8 @@ def show_autostart_selector():
     table.add_column("Description", style="white")
 
     table.add_row("1", "status", "Check Windows startup registry & daemon state")
-    table.add_row("2", "enable", "Enable Jarvis automatic startup on Windows boot")
-    table.add_row("3", "disable", "Disable Jarvis automatic startup on boot")
+    table.add_row("2", "enable", "Enable HelperBoi automatic startup on Windows boot")
+    table.add_row("3", "disable", "Disable HelperBoi automatic startup on boot")
 
     console.print(table)
     choice = input("Select action (1-3) [default: 1]: ").strip()
@@ -376,7 +376,7 @@ def summarize(note_path, level):
 # --- Auto prompt optimization and model routing ---
 # (moved to modules/model_router.py
 def print_help():
-    table = Table(title="🤖 Jarvis Assistant Command Reference", header_style="bold magenta", border_style="bright_blue")
+    table = Table(title="🤖 HelperBoi Assistant Command Reference", header_style="bold magenta", border_style="bright_blue")
     table.add_column("Command", style="bold cyan")
     table.add_column("Description", style="white")
 
@@ -404,7 +404,7 @@ def print_help():
     table.add_row("voice", "Launch interactive voice input & speech synthesis mode")
     table.add_row("speak <text>", "Synthesize and speak text out loud using Windows SAPI5")
     table.add_row("clear", "Clear terminal screen")
-    table.add_row("exit", "Exit Jarvis shell")
+    table.add_row("exit", "Exit HelperBoi shell")
 
     console.print(table)
 
@@ -415,7 +415,7 @@ def main():
     ollama_manager.start()
     try:
         welcome_panel = Panel(
-            Text("🤖 JARVIS AI ASSISTANT\nModular Local LLM Assistant & Skill Engine", justify="center", style="bold cyan"),
+            Text("🤖 HELPERBOI AI ASSISTANT\nModular Local LLM Assistant & Skill Engine", justify="center", style="bold cyan"),
             subtitle="[dim]Type 'help' for available commands | 'exit' to quit[/dim]",
             border_style="bright_blue",
             padding=(1, 2)

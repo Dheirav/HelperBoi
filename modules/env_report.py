@@ -60,7 +60,7 @@ def check_system_dep(dep):
 
 def write_install_md(py_reqs, sys_deps):
     with open(INSTALL_MD, "w", encoding="utf-8") as f:
-        f.write("# Jarvis Environment Setup\n\n")
+        f.write("# HelperBoi Environment Setup\n\n")
         f.write("## Python Requirements\n\n")
         for req in sorted(py_reqs):
             f.write(f"- `{req}`\n")
@@ -75,7 +75,7 @@ def write_install_md(py_reqs, sys_deps):
 def write_setup_sh(py_reqs, sys_deps):
     with open(SETUP_SH, "w", encoding="utf-8") as f:
         f.write("#!/bin/bash\n")
-        f.write("# Jarvis environment setup script\n\n")
+        f.write("# HelperBoi environment setup script\n\n")
         f.write("pip install -r requirements.txt\n")
         for dep in sys_deps:
             if dep["name"] == "Git":
@@ -90,7 +90,7 @@ def write_setup_sh(py_reqs, sys_deps):
         f.write("# e.g. pip install openai-whisper vosk pyttsx3 coqui-ai TTS\n")
 
 def print_env_report(py_reqs, sys_deps):
-    table = Table(title="Jarvis Environment Report", show_lines=True)
+    table = Table(title="HelperBoi Environment Report", show_lines=True)
     table.add_column("Dependency", style="bold green")
     table.add_column("Type", style="cyan")
     table.add_column("Status", style="yellow")
@@ -104,7 +104,7 @@ def print_env_report(py_reqs, sys_deps):
 
 def env_report(show: bool = False):
     """
-    Generate an environment report for Jarvis, including Python and system dependencies.
+    Generate an environment report for HelperBoi, including Python and system dependencies.
     Writes install_requirements.md and setup_env.sh. Use --show to print a summary.
     """
     py_reqs = parse_requirements()

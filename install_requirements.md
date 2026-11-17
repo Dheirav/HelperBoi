@@ -1,4 +1,4 @@
-# Jarvis Environment Setup
+# HelperBoi Environment Setup
 
 ## Python Requirements
 

@@ -4,7 +4,7 @@ import logging
 
 from modules.platform_compat import ollama_endpoint
 
-logger = logging.getLogger("jarvis.model_router")
+logger = logging.getLogger("helperboi.model_router")
 
 LLM_MODELS = [
     {

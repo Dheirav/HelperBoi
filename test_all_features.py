@@ -1,5 +1,5 @@
 """
-Test script for Jarvis: tests all major features in modules/ and main CLI logic.
+Test script for HelperBoi: tests all major features in modules/ and main CLI logic.
 This script is for development/CI sanity checks, not for production.
 """
 import os
@@ -15,7 +15,7 @@ if hasattr(sys.stdout, 'reconfigure'):
 
 from modules import note_polish, code_explain, context_note, refactor, interest_features, assistant_memory_features, memory, vector_search
 
-TEST_VAULT = tempfile.mkdtemp(prefix="jarvis_test_vault_")
+TEST_VAULT = tempfile.mkdtemp(prefix="helperboi_test_vault_")
 TEST_NOTE = os.path.join(TEST_VAULT, "test_note.md")
 
 # --- Helper: create a test note ---

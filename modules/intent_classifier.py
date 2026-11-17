@@ -1,5 +1,5 @@
 """
-Intent Classifier Module for HelperBoi / Jarvis
+Intent Classifier Module for HelperBoi
 Parses free-form natural language user input into structured JSON intents, target files, and parameters.
 """
 
@@ -9,7 +9,7 @@ import re
 from modules.llm_client import call_ollama
 from modules.model_router import get_llm_model, select_best_model_for_task
 
-logger = logging.getLogger("jarvis.intent_classifier")
+logger = logging.getLogger("helperboi.intent_classifier")
 
 BUILTIN_INTENTS = {
     "polish": "Polish, clean up grammar, format, or improve readability of a note or text snippet.",
@@ -56,7 +56,7 @@ def build_classification_prompt(user_input, known_intents):
     """Format system prompt for qwen2.5-coder to return strict JSON intent classification."""
     intent_descriptions = "\n".join([f"- {name}: {desc}" for name, desc in known_intents.items()])
     prompt = (
-        "You are the Intent Classifier for Jarvis AI Assistant.\n"
+        "You are the Intent Classifier for HelperBoi AI Assistant.\n"
         "Classify the following user input into ONE of the available intents and extract relevant parameters.\n\n"
         "Available Intents:\n"
         f"{intent_descriptions}\n\n"

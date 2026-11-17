@@ -1,5 +1,5 @@
 """
-Skill Engine for HelperBoi / Jarvis
+Skill Engine for HelperBoi
 Manages dynamic creation, testing, registration, and execution of custom skills in skills/
 """
 
@@ -14,7 +14,7 @@ from modules.memory import request_file_action, safe_write_file
 from modules.llm_client import call_ollama
 from modules.model_router import get_llm_model, select_best_model_for_task
 
-logger = logging.getLogger("jarvis.skill_engine")
+logger = logging.getLogger("helperboi.skill_engine")
 
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 SKILLS_DIR = os.path.join(PROJECT_ROOT, "skills")
@@ -84,7 +84,7 @@ def create_skill_draft(skill_name, description, python_code):
         "target_dir": target_skill_dir
     }))
 
-    return True, f"Skill '{clean_name}' drafted and submitted for approval. Use 'jarvis approve' to activate."
+    return True, f"Skill '{clean_name}' drafted and submitted for approval. Use 'helperboi approve' to activate."
 
 
 def register_approved_skill(payload):
@@ -139,7 +139,7 @@ def generate_skill_from_prompt(prompt_text, model_id=None):
     model_info = get_llm_model(model_id or select_best_model_for_task("refactor", prompt_text))
 
     sys_prompt = (
-        "You are an expert Python tool developer for Jarvis AI Assistant.\n"
+        "You are an expert Python tool developer for HelperBoi AI Assistant.\n"
         "Generate a complete Python script for a custom tool based on the user's request.\n\n"
         "CRITICAL REQUIREMENTS:\n"
         "1. The Python code MUST define a function `def run(**kwargs):` that accepts arguments and returns a string result.\n"

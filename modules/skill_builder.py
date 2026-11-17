@@ -1,6 +1,6 @@
 """
-Skill Builder Module for HelperBoi / Jarvis
-Allows Jarvis to dynamically write, validate, register, and execute custom Python skills
+Skill Builder Module for HelperBoi
+Allows HelperBoi to dynamically write, validate, register, and execute custom Python skills
 when encountering missing tools or capability gaps.
 """
 
@@ -12,7 +12,7 @@ from modules.llm_client import call_ollama
 from modules.model_router import get_llm_model
 from modules.skill_engine import register_approved_skill, execute_skill, sanitize_skill_name
 
-logger = logging.getLogger("jarvis.skill_builder")
+logger = logging.getLogger("helperboi.skill_builder")
 
 
 def generate_skill_code(skill_name, requirement_description, model_id=None):
@@ -24,7 +24,7 @@ def generate_skill_code(skill_name, requirement_description, model_id=None):
     clean_name = sanitize_skill_name(skill_name)
 
     prompt = (
-        f"You are the Custom Skill Code Generator for Jarvis AI Assistant.\n"
+        f"You are the Custom Skill Code Generator for HelperBoi AI Assistant.\n"
         f"Write a clean, safe, standalone Python script for a skill named '{clean_name}'.\n"
         f"Requirement: {requirement_description}\n\n"
         "STRICT REQUIREMENTS:\n"
@@ -176,7 +176,7 @@ def propose_and_build_skill(action_name, user_input, model_id=None):
         return execute_tool_action(existing_skill, param)
 
     clean_name = sanitize_skill_name(action_name)
-    print(f"\n⚠️  [Capability Gap]: Jarvis lacks a tool for '{action_name}'.")
+    print(f"\n⚠️  [Capability Gap]: HelperBoi lacks a tool for '{action_name}'.")
     print(f"🔨 [Auto Skill Builder]: Generating custom Python skill for '{clean_name}'...")
 
     code = generate_skill_code(clean_name, f"Execute user intent: {user_input}", model_id=model_id)

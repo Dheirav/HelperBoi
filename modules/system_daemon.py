@@ -1,5 +1,5 @@
 """
-System Daemon & Resource Management Module for HelperBoi / Jarvis
+System Daemon & Resource Management Module for HelperBoi
 Handles startup auto-run configuration, VRAM auto-unload, and hardware system status.
 
 The auto-run entry lives in the Windows registry, so it only exists when Python
@@ -14,10 +14,10 @@ import subprocess
 import psutil
 from modules.platform_compat import winreg
 
-logger = logging.getLogger("jarvis.system_daemon")
+logger = logging.getLogger("helperboi.system_daemon")
 
 RUN_REG_KEY = r"Software\Microsoft\Windows\CurrentVersion\Run"
-APP_NAME = "JarvisAssistant"
+APP_NAME = "HelperBoiAssistant"
 
 # Why a message and not a fake success: nothing here can start a Linux process
 # at Windows login, so claiming autostart was enabled would be wrong. On WSL the
@@ -52,7 +52,7 @@ def enforce_vram_auto_unload(keep_alive="5m"):
 
 def enable_windows_autostart():
     """
-    Add Jarvis daemon startup entry to Windows Registry HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run.
+    Add HelperBoi daemon startup entry to Windows Registry HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run.
     """
     if winreg is None:
         return False, _NO_REGISTRY
@@ -65,7 +65,7 @@ def enable_windows_autostart():
             winreg.SetValueEx(key, APP_NAME, 0, winreg.REG_SZ, cmd_str)
 
         enforce_vram_auto_unload("5m")
-        return True, "Jarvis enabled on Windows boot. VRAM auto-unload configured."
+        return True, "HelperBoi enabled on Windows boot. VRAM auto-unload configured."
     except Exception as e:
         logger.error(f"Failed to enable Windows autostart: {e}")
         return False, f"Failed to enable Windows autostart: {e}"
@@ -73,7 +73,7 @@ def enable_windows_autostart():
 
 def disable_windows_autostart():
     """
-    Remove Jarvis daemon startup entry from Windows Registry.
+    Remove HelperBoi daemon startup entry from Windows Registry.
     """
     if winreg is None:
         return False, _NO_REGISTRY
@@ -83,7 +83,7 @@ def disable_windows_autostart():
                 winreg.DeleteValue(key, APP_NAME)
             except FileNotFoundError:
                 pass
-        return True, "Jarvis disabled on Windows boot."
+        return True, "HelperBoi disabled on Windows boot."
     except Exception as e:
         logger.error(f"Failed to disable Windows autostart: {e}")
         return False, f"Failed to disable Windows autostart: {e}"

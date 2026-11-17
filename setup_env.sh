@@ -1,5 +1,5 @@
 #!/bin/bash
-# Jarvis environment setup for Linux and WSL2.
+# HelperBoi environment setup for Linux and WSL2.
 #
 # Dependencies go in .venv and nowhere else. Run the program with
 # .venv/bin/python, not a bare python3, so it cannot fall back to the system one.

@@ -1,0 +1,3 @@
+# Optional: semantic note search. Pulls in PyTorch (over a gigabyte), so it is not installed by default.
+# Without it vector_search falls back to TF-IDF.
+sentence-transformers>=2.7.0,<4.0.0

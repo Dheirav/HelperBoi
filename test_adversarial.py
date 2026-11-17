@@ -1,5 +1,5 @@
 """
-🔥 ADVERSARIAL TEST SUITE - HelperBoi / Jarvis
+🔥 ADVERSARIAL TEST SUITE - HelperBoi
 Attempts to break every module in every conceivable way:
 - Type confusion & null inputs
 - Path traversal & injection attacks
@@ -469,7 +469,7 @@ class TestPathSecurity(unittest.TestCase):
 
     def test_temp_dir_is_allowed(self):
         """System temp directory should be allowed."""
-        temp_path = os.path.join(tempfile.gettempdir(), "jarvis_test.json")
+        temp_path = os.path.join(tempfile.gettempdir(), "helperboi_test.json")
         self.assertTrue(self.is_path_allowed(temp_path))
 
     def test_safe_write_blocks_traversal(self):

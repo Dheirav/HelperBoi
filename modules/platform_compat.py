@@ -1,4 +1,4 @@
-"""Where Jarvis is running, and the few places Windows and Linux differ.
+"""Where HelperBoi is running, and the few places Windows and Linux differ.
 
 The assistant was written on Windows, so it called os.startfile, winreg and the
 Windows speech engine directly. Under WSL none of those exist, and the first
@@ -78,7 +78,7 @@ def to_linux_path(path):
 def normalize_path(path):
     """Read Windows-style input as the path it means on this OS.
 
-    Users and LLMs write C:\\Users\\me\\notes or ..\\..\\x even when Jarvis
+    Users and LLMs write C:\\Users\\me\\notes or ..\\..\\x even when HelperBoi
     runs in WSL. On Linux a backslash is an ordinary filename character, so
     without this such a string is a single odd filename inside the current
     folder, and the path guard approved it while any Windows program handed the

@@ -300,7 +300,7 @@ def request_file_action(action, file_path, new_content=None):
     }
     queue.append(entry)
     save_json(APPROVAL_QUEUE_PATH, queue)
-    print(f"[APPROVAL] {action.upper()} requested for {file_path}. Use 'jarvis approve' to review and approve.")
+    print(f"[APPROVAL] {action.upper()} requested for {file_path}. Use 'helperboi approve' to review and approve.")
     return False  # Block until approved
 
 def get_approval_queue():

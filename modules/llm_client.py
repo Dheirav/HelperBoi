@@ -4,7 +4,7 @@ import logging
 import time
 import requests
 
-logger = logging.getLogger("jarvis.llm_client")
+logger = logging.getLogger("helperboi.llm_client")
 
 class LLMError(Exception):
     """Base exception for all LLM errors."""

@@ -1,5 +1,5 @@
 """
-ReAct Agent Loop Module for HelperBoi / Jarvis
+ReAct Agent Loop Module for HelperBoi
 Executes multi-step reasoning and tool-chaining (Thought -> Action -> Action Input -> Observation)
 """
 
@@ -13,7 +13,7 @@ from modules.intent_classifier import get_known_intents
 from modules import vector_search, code_explain, refactor, polish, summarize, tools_extension
 from modules.skill_engine import list_skills, execute_skill
 
-logger = logging.getLogger("jarvis.agent_loop")
+logger = logging.getLogger("helperboi.agent_loop")
 
 
 def execute_tool_action(action_name, action_input, vault_path=None):
@@ -82,12 +82,12 @@ def run_agent_loop(user_goal, max_iterations=5, model_id=None, vault_path=None):
     model_info = get_llm_model(model_id or select_best_model_for_task("refactor", user_goal))
 
     history = []
-    print(f"\n[AGENT] [Jarvis ReAct Loop Started]: \"{user_goal}\"")
+    print(f"\n[AGENT] [HelperBoi ReAct Loop Started]: \"{user_goal}\"")
 
     for i in range(1, max_iterations + 1):
         history_str = "\n".join(history)
         prompt = (
-            "You are Jarvis, an autonomous AI assistant.\n"
+            "You are HelperBoi, an autonomous AI assistant.\n"
             "Achieve the user's goal by executing tools step-by-step using the ReAct (Reasoning + Acting) format.\n\n"
             "Available Tools:\n"
             f"{tools_desc}\n\n"

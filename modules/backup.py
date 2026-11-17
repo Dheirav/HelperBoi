@@ -20,7 +20,7 @@ def backup_vault(vault_path=".", github_pat=None):
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         subprocess.run(["git", "-C", vault_path, "add", "."], check=True, env=env)
         commit_result = subprocess.run(
-            ["git", "-C", vault_path, "commit", "-m", f"Jarvis Auto Backup - {timestamp}"],
+            ["git", "-C", vault_path, "commit", "-m", f"HelperBoi Auto Backup - {timestamp}"],
             capture_output=True,
             text=True,
             env=env

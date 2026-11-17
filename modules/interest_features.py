@@ -1,5 +1,5 @@
 """
-Interest/Topic Enhancement Features for Jarvis
+Interest/Topic Enhancement Features for HelperBoi
 - Visualization (word cloud, bar chart)
 - Change tracking
 - Interest-to-note mapping

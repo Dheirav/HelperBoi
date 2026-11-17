@@ -1,4 +1,4 @@
-# 🤖 Jarvis: Your Local AI Assistant  
+# 🤖 HelperBoi: Your Local AI Assistant  
 *Version: v0.1-planning-complete*
 
 A modular, privacy-respecting, performance-optimized personal AI assistant built for creators, coders, students, and lifelong learners. Designed to evolve with your interests — from Obsidian notes to dev projects, voice control, automation, calendar integration, and more.
@@ -33,8 +33,8 @@ What changes under WSL, and why:
   does not install. It also calls Google's web API, so audio leaves the machine.
 - **Autostart** edits the Windows registry, which Linux cannot reach, so it reports
   that it is unavailable. A systemd user service is the WSL equivalent and is not built.
-- **sentence-transformers** is in `requirements.txt` but pulls in PyTorch. Without
-  it, `vector_search` falls back to TF-IDF.
+- **sentence-transformers** is optional (`requirements-embeddings.txt`) because it pulls
+  in PyTorch. Without it, `vector_search` falls back to TF-IDF.
 
 ---
 
@@ -69,7 +69,7 @@ What changes under WSL, and why:
   - Assistant behavior, preferences, history **[✔️ Full: memory.py, assistant_context.json, prefs.json, CLI: prefs, history]**
   - Feature learning (self-modifying feature registry) **[✔️ Full: memory.py, feature_registry.json, CLI: feature_registry, remember, forget]**
   - Task logs and frequent workflows **[✔️ Full: memory.py, task_log.json, CLI: task_log, frequent]**
-- Natural-language feature learning (e.g., “Jarvis, always summarize EOD”) **[✔️ Full: memory.py, CLI: remember, forget]**
+- Natural-language feature learning (e.g., “HelperBoi, always summarize EOD”) **[✔️ Full: memory.py, CLI: remember, forget]**
 - CLI commands: `prefs`, `history`, `feature_registry`, `task_log`, `frequent`, `remember`, `forget` **[✔️ Full]**
 
 ---
@@ -111,7 +111,7 @@ What changes under WSL, and why:
   - Creating, modifying, deleting files **[✔️ Full: memory.py, CLI: approve, preview-diff, dry-run, safe_write_file, safe_delete_file]**
   - Backing up vault **[✔️ Full: backup.py, CLI prompt]**
   - Running git operations **[✔️ Full: backup.py, CLI prompt]**
-- CLI approval system (`jarvis approve`) **[✔️ Full: memory.py, CLI: approve]**
+- CLI approval system (`helperboi approve`) **[✔️ Full: memory.py, CLI: approve]**
 - Preview of changes/diff before action **[✔️ Full: memory.py, CLI: preview-diff]**
 - Auto-backup before any major action **[✔️ Full: backup.py]**
 - Dry-run mode available **[✔️ Full: memory.py, CLI: dry-run]**
@@ -121,19 +121,19 @@ What changes under WSL, and why:
 ### 🧾 CLI + Daemon Control
 - Background daemon with status reporting **[Planned]**
 - CLI commands for:
-  - `jarvis summarize` **[✔️ Full: summarize.py, modular, LLM-powered, dynamic timeout]**
-  - `jarvis polish` **[✔️ Full: polish.py, modular, LLM-powered]**
-  - `jarvis set-mode` **[✔️ Full: memory.py, CLI/profile switching, persistent]**
-  - `jarvis mode` **[✔️ Full: memory.py, CLI: show current mode]**
-  - `jarvis add-feature` **[Planned]**
-  - `jarvis backup` **[✔️ Full: backup.py, modular, PAT/SSH]**
-  - `jarvis uninstall` **[Planned]**
-  - `jarvis note_polish` **[✔️ Full: note_polish.py, now in main CLI]**
-  - `jarvis code_explain` **[✔️ Full: code_explain.py, now in main CLI]**
-  - `jarvis context_note` **[✔️ Full: context_note.py, now in main CLI]**
-  - `jarvis refactor` **[✔️ Full: refactor.py, now in main CLI]**
-  - `jarvis interest_features` **[✔️ Full: interest_features.py, now in main CLI]**
-  - `jarvis assistant_memory_features` **[✔️ Full: assistant_memory_features.py, now in main CLI]**
+  - `helperboi summarize` **[✔️ Full: summarize.py, modular, LLM-powered, dynamic timeout]**
+  - `helperboi polish` **[✔️ Full: polish.py, modular, LLM-powered]**
+  - `helperboi set-mode` **[✔️ Full: memory.py, CLI/profile switching, persistent]**
+  - `helperboi mode` **[✔️ Full: memory.py, CLI: show current mode]**
+  - `helperboi add-feature` **[Planned]**
+  - `helperboi backup` **[✔️ Full: backup.py, modular, PAT/SSH]**
+  - `helperboi uninstall` **[Planned]**
+  - `helperboi note_polish` **[✔️ Full: note_polish.py, now in main CLI]**
+  - `helperboi code_explain` **[✔️ Full: code_explain.py, now in main CLI]**
+  - `helperboi context_note` **[✔️ Full: context_note.py, now in main CLI]**
+  - `helperboi refactor` **[✔️ Full: refactor.py, now in main CLI]**
+  - `helperboi interest_features` **[✔️ Full: interest_features.py, now in main CLI]**
+  - `helperboi assistant_memory_features` **[✔️ Full: assistant_memory_features.py, now in main CLI]**
 - Feature toggles from `feature_registry.json` **[✔️ Full]**
 
 ---
@@ -187,7 +187,7 @@ All LLMs run via **Ollama**, **llama.cpp**, or **GPTQ** depending on platform.
 ## 📁 Project Structure (Scaffold)
 
 ~~~
-Jarvis/  
+HelperBoi/  
 ├── main.py  
 ├── config.json  
 ├── feature_registry.json  

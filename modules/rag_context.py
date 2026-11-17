@@ -1,5 +1,5 @@
 """
-Unified RAG Context Auto-Injection Module for HelperBoi / Jarvis
+Unified RAG Context Auto-Injection Module for HelperBoi
 Automatically retrieves relevant Obsidian notes and assistant memory to inject context into LLM prompts.
 """
 
@@ -9,7 +9,7 @@ from modules import vector_search, assistant_memory_features
 from modules.llm_client import call_ollama
 from modules.model_router import get_llm_model, select_best_model_for_task
 
-logger = logging.getLogger("jarvis.rag_context")
+logger = logging.getLogger("helperboi.rag_context")
 
 
 def build_rag_context(user_prompt, vault_path=None, top_k=3):
@@ -59,8 +59,8 @@ def inject_rag_and_call(user_prompt, system_instruction=None, model_id=None, vau
     """
     rag_prefix = build_rag_context(user_prompt, vault_path=vault_path)
     
-    full_prompt = (system_instruction or "You are Jarvis, an intelligent personal AI assistant.\nAnswer the user query accurately using the provided knowledge context when relevant.\n")
-    full_prompt += f"\n{rag_prefix}User Query: \"{user_prompt}\"\n\nJarvis Response:"
+    full_prompt = (system_instruction or "You are HelperBoi, an intelligent personal AI assistant.\nAnswer the user query accurately using the provided knowledge context when relevant.\n")
+    full_prompt += f"\n{rag_prefix}User Query: \"{user_prompt}\"\n\nHelperBoi Response:"
 
     model_info = get_llm_model(model_id or select_best_model_for_task("context_note", user_prompt))
     return call_ollama(full_prompt, endpoint=model_info["endpoint"], model=model_info["model"], timeout=30)
