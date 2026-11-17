@@ -1,10 +1,21 @@
 #!/bin/bash
-# Jarvis environment setup script
+# Jarvis environment setup for Linux and WSL2.
+#
+# Dependencies go in .venv and nowhere else. Run the program with
+# .venv/bin/python, not a bare python3, so it cannot fall back to the system one.
+set -euo pipefail
+cd "$(dirname "$0")"
 
-pip install -r requirements.txt
-# See https://ollama.com/download for platform-specific install
-sudo apt-get install -y git
-sudo apt-get install -y ffmpeg
-# WSL2: See https://learn.microsoft.com/en-us/windows/wsl/install
-# Whisper/Vosk/TTS: install via pip if needed
-# e.g. pip install openai-whisper vosk pyttsx3 coqui-ai TTS
+# uv would otherwise pick its own managed Python; the code needs 3.12 (backslashes
+# inside f-string expressions), which is what Ubuntu 24.04 ships.
+python3 --version
+python3 -m venv .venv
+.venv/bin/python -m pip install -r requirements.txt
+
+# Ollama server: https://ollama.com/download . Under WSL install it inside WSL so
+# that http://localhost:11434 (the default here) reaches it. If it runs on Windows
+# instead, point OLLAMA_HOST at it.
+# Speech: the Windows voice is used through powershell.exe, so nothing to install.
+# Microphone input needs PulseAudio from WSLg plus: sudo apt-get install -y portaudio19-dev
+#   and .venv/bin/python -m pip install SpeechRecognition pyaudio
+sudo apt-get install -y git ffmpeg

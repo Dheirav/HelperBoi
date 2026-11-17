@@ -5,6 +5,39 @@ A modular, privacy-respecting, performance-optimized personal AI assistant built
 
 ---
 
+## Running under WSL2 (Ubuntu)
+
+This is the supported setup. Windows-only calls (the registry, `os.startfile`, the
+Windows speech engine) go through `modules/platform_compat.py`, so the same code
+runs on Windows and in WSL.
+
+```bash
+./setup_env.sh                                  # creates .venv, installs requirements
+.venv/bin/python main.py                        # always the venv's Python, never bare python3
+.venv/bin/python -m unittest test_platform_compat -v
+tools/run-tests.sh test_adversarial && tools/test-progress.sh --watch
+```
+
+What changes under WSL, and why:
+
+- **Ollama** is expected inside WSL at `http://localhost:11434`. If it runs somewhere
+  else, set `OLLAMA_HOST` (same format the `ollama` CLI uses). Nothing else is hard-coded.
+- **Vault path** in `config.json` can stay `C:/...`. It is translated to `/mnt/c/...`
+  on load, so one config works from both sides. Keep working files on the Linux
+  filesystem, because `/mnt/c` is slow and case-insensitive.
+- **Opening apps, folders and links** uses `explorer.exe`, which handles paths, URLs
+  and schemes such as `whatsapp://`. "Opened" is only reported when a launcher
+  exists, because `webbrowser` returns False under WSL without raising.
+- **Speech out** uses the Windows voice through `powershell.exe`. Speech in still
+  needs a microphone route (WSLg PulseAudio) and `pyaudio`, which `setup_env.sh`
+  does not install. It also calls Google's web API, so audio leaves the machine.
+- **Autostart** edits the Windows registry, which Linux cannot reach, so it reports
+  that it is unavailable. A systemd user service is the WSL equivalent and is not built.
+- **sentence-transformers** is in `requirements.txt` but pulls in PyTorch. Without
+  it, `vector_search` falls back to TF-IDF.
+
+---
+
 ## ✅ Features
 
 ### 🧠 Core Intelligence

@@ -2,6 +2,8 @@ import urllib.request
 import json
 import logging
 
+from modules.platform_compat import ollama_endpoint
+
 logger = logging.getLogger("jarvis.model_router")
 
 LLM_MODELS = [
@@ -9,7 +11,7 @@ LLM_MODELS = [
         "name": "LLaMA 3 8B",
         "id": "llama3",
         "model": "llama3:latest",
-        "endpoint": "http://localhost:11434",
+        "endpoint": ollama_endpoint(),
         "type": "ollama",
         "description": "General conversation, intent classification & smart context (default)",
         "ram": "~4.7 GB VRAM",
@@ -19,7 +21,7 @@ LLM_MODELS = [
         "name": "LLaMA 3.2",
         "id": "llama3.2",
         "model": "llama3.2:latest",
-        "endpoint": "http://localhost:11434",
+        "endpoint": ollama_endpoint(),
         "type": "ollama",
         "description": "Fast lightweight LLM model",
         "ram": "~2.0 GB VRAM"
@@ -28,7 +30,7 @@ LLM_MODELS = [
         "name": "Mistral 7B",
         "id": "mistral",
         "model": "mistral:latest",
-        "endpoint": "http://localhost:11434",
+        "endpoint": ollama_endpoint(),
         "type": "ollama",
         "description": "General conversation and reasoning",
         "ram": "~4.1 GB VRAM"
@@ -37,7 +39,7 @@ LLM_MODELS = [
         "name": "CodeLLaMA 7B",
         "id": "codellama",
         "model": "codellama:latest",
-        "endpoint": "http://localhost:11434",
+        "endpoint": ollama_endpoint(),
         "type": "ollama",
         "description": "Code generation & refactoring",
         "ram": "~4.7 GB VRAM"
@@ -46,7 +48,7 @@ LLM_MODELS = [
         "name": "Qwen 2.5 Coder 7B",
         "id": "qwen2.5-coder:7b",
         "model": "qwen2.5-coder:7b",
-        "endpoint": "http://localhost:11434",
+        "endpoint": ollama_endpoint(),
         "type": "ollama",
         "description": "Fast code generation & function calling",
         "ram": "~4.7 GB VRAM"
@@ -61,7 +63,7 @@ def get_installed_ollama_models():
     if _INSTALLED_MODELS_CACHE is not None:
         return _INSTALLED_MODELS_CACHE
     try:
-        req = urllib.request.urlopen("http://localhost:11434/api/tags", timeout=2)
+        req = urllib.request.urlopen(f"{ollama_endpoint()}/api/tags", timeout=2)
         data = json.loads(req.read().decode())
         _INSTALLED_MODELS_CACHE = [m["name"] for m in data.get("models", [])]
         return _INSTALLED_MODELS_CACHE
@@ -100,7 +102,7 @@ def get_llm_model(model_id=None):
             "name": first_installed,
             "id": first_installed,
             "model": first_installed,
-            "endpoint": "http://localhost:11434",
+            "endpoint": ollama_endpoint(),
             "type": "ollama",
             "description": "Dynamically detected local Ollama model",
             "ram": "Unknown"

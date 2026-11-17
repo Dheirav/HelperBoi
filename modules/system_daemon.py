@@ -1,6 +1,10 @@
 """
-Windows System Daemon & Resource Management Module for HelperBoi / Jarvis
-Handles Windows startup auto-run configuration, VRAM auto-unload, and hardware system status.
+System Daemon & Resource Management Module for HelperBoi / Jarvis
+Handles startup auto-run configuration, VRAM auto-unload, and hardware system status.
+
+The auto-run entry lives in the Windows registry, so it only exists when Python
+is running on Windows. Under WSL those calls report that plainly instead of
+failing, and the rest (status, VRAM unload for this process) still works.
 """
 
 import os
@@ -8,12 +12,20 @@ import sys
 import logging
 import subprocess
 import psutil
-import winreg
+from modules.platform_compat import winreg
 
 logger = logging.getLogger("jarvis.system_daemon")
 
 RUN_REG_KEY = r"Software\Microsoft\Windows\CurrentVersion\Run"
 APP_NAME = "JarvisAssistant"
+
+# Why a message and not a fake success: nothing here can start a Linux process
+# at Windows login, so claiming autostart was enabled would be wrong. On WSL the
+# working equivalent is a systemd user service (systemd is enabled in wsl.conf).
+_NO_REGISTRY = (
+    "Windows autostart needs the Windows registry, which Python under WSL/Linux "
+    "cannot reach. Use a systemd user service instead."
+)
 
 
 def enforce_vram_auto_unload(keep_alive="5m"):
@@ -22,6 +34,12 @@ def enforce_vram_auto_unload(keep_alive="5m"):
     """
     try:
         os.environ["OLLAMA_KEEP_ALIVE"] = keep_alive
+        if winreg is None:
+            # Only this process and its children see the value. The Ollama server
+            # reads its own environment, so a permanent change belongs where the
+            # server is started (shell profile or its systemd unit).
+            return True, (f"OLLAMA_KEEP_ALIVE={keep_alive} set for this session only. "
+                          "Set it where the Ollama server starts to make it permanent.")
         # Set user environment variable in Windows registry
         with winreg.OpenKey(winreg.HKEY_CURRENT_USER, r"Environment", 0, winreg.KEY_SET_VALUE) as key:
             winreg.SetValueEx(key, "OLLAMA_KEEP_ALIVE", 0, winreg.REG_SZ, keep_alive)
@@ -36,6 +54,8 @@ def enable_windows_autostart():
     """
     Add Jarvis daemon startup entry to Windows Registry HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run.
     """
+    if winreg is None:
+        return False, _NO_REGISTRY
     try:
         python_exe = sys.executable
         main_py = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "main.py"))
@@ -55,6 +75,8 @@ def disable_windows_autostart():
     """
     Remove Jarvis daemon startup entry from Windows Registry.
     """
+    if winreg is None:
+        return False, _NO_REGISTRY
     try:
         with winreg.OpenKey(winreg.HKEY_CURRENT_USER, RUN_REG_KEY, 0, winreg.KEY_SET_VALUE) as key:
             try:
@@ -69,6 +91,8 @@ def disable_windows_autostart():
 
 def is_autostart_enabled():
     """Check if autostart registry entry exists."""
+    if winreg is None:
+        return False, None
     try:
         with winreg.OpenKey(winreg.HKEY_CURRENT_USER, RUN_REG_KEY, 0, winreg.KEY_READ) as key:
             val, _ = winreg.QueryValueEx(key, APP_NAME)

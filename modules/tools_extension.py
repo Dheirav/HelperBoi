@@ -14,6 +14,10 @@ import re
 import json
 import subprocess
 from modules.memory import is_path_allowed, safe_write_file
+from modules.platform_compat import (
+    IS_WINDOWS, normalize_path, open_target, ollama_endpoint, to_linux_path, windows_home,
+    windows_uri_registered, winreg,
+)
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -27,11 +31,11 @@ def configured_vault_path():
     """
     env_path = os.environ.get("OBSIDIAN_VAULT_PATH")
     if env_path:
-        return env_path
+        return to_linux_path(env_path)
     config_file = os.path.join(PROJECT_ROOT, "config.json")
     try:
         with open(config_file) as f:
-            return json.load(f).get("obsidian_vault_path") or ""
+            return to_linux_path(json.load(f).get("obsidian_vault_path") or "")
     except (OSError, ValueError):
         return ""
 
@@ -41,6 +45,7 @@ def read_file(file_path):
     file_path = str(file_path).strip()
     if not is_path_allowed(file_path):
         return f"[SECURITY ERROR] File path '{file_path}' is outside allowed directories!"
+    file_path = normalize_path(file_path)
     if not os.path.exists(file_path):
         return f"[ERROR] File '{file_path}' does not exist!"
     try:
@@ -56,6 +61,7 @@ def write_file(file_path, content=""):
     file_path = str(file_path).strip()
     if not is_path_allowed(file_path):
         return f"[SECURITY ERROR] Write target '{file_path}' is outside allowed directories!"
+    file_path = normalize_path(file_path)
     try:
         ok = safe_write_file(file_path, content, approved=True)
         if ok or os.path.exists(file_path):
@@ -122,7 +128,7 @@ def system_diagnose(vault_path=None):
     models = []
     try:
         import requests
-        resp = requests.get("http://localhost:11434/api/tags", timeout=2)
+        resp = requests.get(f"{ollama_endpoint()}/api/tags", timeout=2)
         if resp.status_code == 200:
             ollama_ok = True
             models = [m.get("name") for m in resp.json().get("models", [])]
@@ -152,7 +158,8 @@ def system_diagnose(vault_path=None):
 
 def find_windows_app_path(app_name):
     """Dynamically search Windows Registry App Paths for an executable."""
-    import winreg
+    if winreg is None:
+        return None  # the registry is not visible from WSL/Linux; callers fall back to PATH
     clean_name = app_name.lower().replace(" ", "").replace(".exe", "")
     reg_keys = [
         r"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths",
@@ -177,15 +184,7 @@ def find_windows_app_path(app_name):
 
 def is_valid_win_uri(protocol_str):
     """Check if a URI scheme (e.g. 'whatsapp://') is registered in Windows Registry."""
-    import winreg
-    proto = protocol_str.replace("://", "").replace(":", "").strip().lower()
-    if not proto:
-        return False
-    try:
-        with winreg.OpenKey(winreg.HKEY_CLASSES_ROOT, proto) as key:
-            return True
-    except Exception:
-        return False
+    return windows_uri_registered(protocol_str)
 
 
 def open_app(app_name):
@@ -199,7 +198,6 @@ def open_app(app_name):
     """
     import shutil
     import subprocess
-    import winreg
 
     app_name_raw = str(app_name).strip()
     app_name_str = app_name_raw.lower()
@@ -230,7 +228,7 @@ def open_app(app_name):
 
     if uri_to_try and is_valid_win_uri(uri_to_try):
         try:
-            os.startfile(uri_to_try)
+            open_target(uri_to_try)
             return f"[SUCCESS] Launched '{app_name_raw}' via URI scheme '{uri_to_try}'."
         except Exception:
             pass
@@ -240,7 +238,7 @@ def open_app(app_name):
     found_cmd = shutil.which(app_name_str) or shutil.which(exe_name) or shutil.which(clean_slug)
     if found_cmd:
         try:
-            subprocess.Popen([found_cmd], shell=True)
+            subprocess.Popen([found_cmd], shell=IS_WINDOWS)
             return f"[SUCCESS] Launched '{found_cmd}'."
         except Exception as e:
             return f"[ERROR] Could not launch '{found_cmd}': {e}"
@@ -249,7 +247,7 @@ def open_app(app_name):
     reg_path = find_windows_app_path(clean_slug) or find_windows_app_path(app_name_str)
     if reg_path:
         try:
-            os.startfile(reg_path)
+            open_target(reg_path)
             return f"[SUCCESS] Launched '{app_name_raw}' from registry path '{reg_path}'."
         except Exception as e:
             return f"[ERROR] Could not launch '{reg_path}': {e}"
@@ -469,7 +467,7 @@ def handle_in_app_action(app_name, sub_action, target):
             clean_code = target_str.split("chat.whatsapp.com/")[-1].strip()
             group_link = f"https://chat.whatsapp.com/{clean_code}"
             try:
-                os.startfile(group_link)
+                open_target(group_link)
                 return f"[SUCCESS] Opened WhatsApp group chat via link '{group_link}'."
             except Exception as e:
                 return f"[ERROR] Failed to open WhatsApp group link: {e}"
@@ -479,7 +477,7 @@ def handle_in_app_action(app_name, sub_action, target):
         if len(phone) >= 10:
             uri = f"whatsapp://send?phone={phone}"
             try:
-                os.startfile(uri)
+                open_target(uri)
                 return f"[SUCCESS] Opened WhatsApp chat with phone number {phone}."
             except Exception as e:
                 return f"[ERROR] Failed to open WhatsApp deep link: {e}"
@@ -488,7 +486,7 @@ def handle_in_app_action(app_name, sub_action, target):
         kind, value, source_file, disp_name = lookup_whatsapp_registry(target_str)
         if kind == "group_link":
             try:
-                os.startfile(value)
+                open_target(value)
                 return f"[SUCCESS] Found saved group link for '{disp_name or target_str}' in '{source_file}'! Opened group chat."
             except Exception as e:
                 return f"[ERROR] Failed to open group link from registry: {e}"
@@ -496,7 +494,7 @@ def handle_in_app_action(app_name, sub_action, target):
             clean_p = re.sub(r'[^0-9+]', '', value)
             uri = f"whatsapp://send?phone={clean_p}"
             try:
-                os.startfile(uri)
+                open_target(uri)
                 contact_label = disp_name if disp_name else target_str
                 return f"[SUCCESS] Found contact '{contact_label}' ({clean_p}) in '{source_file}'! Opened WhatsApp chat."
             except Exception as e:
@@ -504,7 +502,7 @@ def handle_in_app_action(app_name, sub_action, target):
 
         # 4. Fallback: Launch WhatsApp app & explain Registry file feature
         try:
-            os.startfile("whatsapp://")
+            open_target("whatsapp://")
         except Exception:
             pass
         return (
@@ -522,7 +520,7 @@ def handle_in_app_action(app_name, sub_action, target):
             import urllib.parse
             uri = f"spotify:search:{urllib.parse.quote(target_str)}"
             try:
-                os.startfile(uri)
+                open_target(uri)
                 return f"[SUCCESS] Opened Spotify search for '{target_str}'."
             except Exception:
                 return f"[CAPABILITY LIMIT] Could not deep-link into Spotify for '{target_str}'."
@@ -538,7 +536,7 @@ def handle_in_app_action(app_name, sub_action, target):
             uri = f"obsidian://open?vault=Obsidian&file={clean_target}"
             msg = f"[SUCCESS] Opened note '{target_str}' in Obsidian."
         try:
-            os.startfile(uri)
+            open_target(uri)
             return msg
         except Exception:
             return f"[CAPABILITY LIMIT] Could not open Obsidian URI scheme for '{target_str}'."
@@ -548,7 +546,7 @@ def handle_in_app_action(app_name, sub_action, target):
         import urllib.parse
         search_url = f"https://www.youtube.com/results?search_query={urllib.parse.quote(target_str)}"
         try:
-            os.startfile(search_url)
+            open_target(search_url)
             return f"[SUCCESS] Opened YouTube search for '{target_str}'."
         except Exception as e:
             return f"[ERROR] Could not open YouTube search: {e}"
@@ -564,7 +562,7 @@ def handle_in_app_action(app_name, sub_action, target):
             maps_url = f"https://www.google.com/maps/search/{encoded}"
             msg = f"[SUCCESS] Opened Google Maps search for '{target_str}'."
         try:
-            os.startfile(maps_url)
+            open_target(maps_url)
             return msg
         except Exception as e:
             return f"[ERROR] Could not open Google Maps: {e}"
@@ -579,11 +577,11 @@ def handle_in_app_action(app_name, sub_action, target):
         uri = f"vscode://file/{urllib.parse.quote(target_path)}"
         try:
             import subprocess
-            subprocess.Popen(["code", target_path], shell=True)
+            subprocess.Popen(["code", target_path], shell=IS_WINDOWS)
             return f"[SUCCESS] Opened '{target_str}' in VS Code."
         except Exception:
             try:
-                os.startfile(uri)
+                open_target(uri)
                 return f"[SUCCESS] Opened '{target_str}' in VS Code."
             except Exception as e:
                 return f"[ERROR] Could not launch VS Code: {e}"
@@ -591,7 +589,7 @@ def handle_in_app_action(app_name, sub_action, target):
     # Discord
     if app in ("discord", "dc"):
         try:
-            os.startfile("discord://")
+            open_target("discord://")
             return f"[SUCCESS] Opened Discord application."
         except Exception:
             return open_app("discord")
@@ -599,14 +597,14 @@ def handle_in_app_action(app_name, sub_action, target):
     # Notion
     if app in ("notion",):
         try:
-            os.startfile("notion://")
+            open_target("notion://")
             return f"[SUCCESS] Opened Notion application."
         except Exception:
             return open_app("notion")
 
     # File Explorer / Folders
     if app in ("explorer", "folder", "directory", "file explorer"):
-        user_profile = os.environ.get("USERPROFILE") or os.path.expanduser("~")
+        user_profile = windows_home() or os.path.expanduser("~")
         folder_map = {
             "downloads": os.path.join(user_profile, "Downloads"),
             "desktop": os.path.join(user_profile, "Desktop"),
@@ -620,7 +618,7 @@ def handle_in_app_action(app_name, sub_action, target):
         target_folder = folder_map.get(clean_tgt) or (target_str if os.path.exists(target_str) else None)
         if target_folder and os.path.exists(target_folder):
             try:
-                os.startfile(target_folder)
+                open_target(target_folder)
                 return f"[SUCCESS] Opened folder '{target_folder}' in File Explorer."
             except Exception as e:
                 return f"[ERROR] Could not open folder: {e}"
@@ -630,7 +628,7 @@ def handle_in_app_action(app_name, sub_action, target):
         clean_target = target_str.lstrip("@")
         uri = f"tg://resolve?domain={clean_target}"
         try:
-            os.startfile(uri)
+            open_target(uri)
             return f"[SUCCESS] Opened Telegram chat with '@{clean_target}'."
         except Exception:
             return (
@@ -650,13 +648,27 @@ def handle_in_app_action(app_name, sub_action, target):
 
 
 
+def _open_url(url):
+    """Open a URL, raising if nothing could.
+
+    webbrowser.open returns False instead of raising when it finds no browser,
+    which is the normal case under WSL, so the old code reported "Opened" for a
+    page that never appeared.
+    """
+    if IS_WINDOWS:
+        import webbrowser
+        if not webbrowser.open(url):
+            raise RuntimeError("no web browser available")
+    else:
+        open_target(url)
+
+
 def open_browser(target="https://www.google.com"):
     """Open default web browser to a URL, specific web service, or search query."""
 
-    import webbrowser
     import urllib.parse
     import re
-    
+
     target_str = str(target).strip()
     target_lower = target_str.lower()
 
@@ -681,7 +693,7 @@ def open_browser(target="https://www.google.com"):
 
     if urls_to_open:
         for url in urls_to_open:
-            webbrowser.open(url)
+            _open_url(url)
         return f"[SUCCESS] Opened web browser to: {', '.join(urls_to_open)}"
 
     # 2. Direct URLs or domains
@@ -697,7 +709,7 @@ def open_browser(target="https://www.google.com"):
         url = f"https://www.google.com/search?q={urllib.parse.quote(clean_query or target_str)}"
 
     try:
-        webbrowser.open(url)
+        _open_url(url)
         return f"[SUCCESS] Opened web browser to {url}"
     except Exception as e:
         return f"[ERROR] Failed to open browser: {e}"

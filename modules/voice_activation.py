@@ -1,8 +1,10 @@
 """
 Voice Activation Module for HelperBoi / Jarvis
 Provides:
-- 100% Offline Speech-to-Text (STT) via SpeechRecognition
-- 100% Offline Text-to-Speech (TTS) via pyttsx3 (Windows SAPI5)
+- Speech-to-Text (STT) via SpeechRecognition. The recognizer it calls is Google's
+  web API (recognize_google), so the audio leaves the machine; it is not offline.
+- Text-to-Speech (TTS): pyttsx3 (SAPI5) on Windows; under WSL the Windows voice
+  is driven through powershell.exe, because pyttsx3 has no engine there.
 - Wake-word listener ("Jarvis", "Hey Jarvis")
 - Interactive Voice Shell Mode
 """
@@ -14,20 +16,23 @@ import time
 import logging
 import threading
 
+from modules.platform_compat import IS_WSL, speak_with_windows_voice
+
 logger = logging.getLogger("jarvis.voice")
 
 # Try importing pyttsx3 for TTS
 _TTS_ENGINE = None
-try:
-    import pyttsx3
-    _TTS_ENGINE = pyttsx3.init()
-    # Configure voice properties
-    voices = _TTS_ENGINE.getProperty('voices')
-    if voices:
-        _TTS_ENGINE.setProperty('voice', voices[0].id)  # Default male/female system voice
-    _TTS_ENGINE.setProperty('rate', 185)               # Words per minute
-except Exception as e:
-    logger.warning(f"pyttsx3 initialization failed: {e}")
+if not IS_WSL:  # no audio engine for pyttsx3 inside WSL; speak() uses the Windows voice
+    try:
+        import pyttsx3
+        _TTS_ENGINE = pyttsx3.init()
+        # Configure voice properties
+        voices = _TTS_ENGINE.getProperty('voices')
+        if voices:
+            _TTS_ENGINE.setProperty('voice', voices[0].id)  # Default male/female system voice
+        _TTS_ENGINE.setProperty('rate', 185)               # Words per minute
+    except Exception as e:
+        logger.warning(f"pyttsx3 initialization failed: {e}")
 
 # Try importing SpeechRecognition for STT
 _SR_AVAILABLE = False
@@ -67,6 +72,10 @@ def speak(text, block=True, timeout_sec=None):
 
     def _do_speak():
         with _tts_lock:
+            if IS_WSL:
+                if not speak_with_windows_voice(clean_text):
+                    logger.warning("TTS: the Windows voice could not be reached through powershell.exe")
+                return
             try:
                 try:
                     import pythoncom

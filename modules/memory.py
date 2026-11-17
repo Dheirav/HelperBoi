@@ -3,6 +3,7 @@ import os
 from datetime import datetime
 import subprocess
 import psutil
+from modules.platform_compat import is_foreign_path, normalize_path, to_linux_path
 import difflib
 import threading
 import time
@@ -363,7 +364,9 @@ def is_path_allowed(file_path):
         # Block null byte injection
         if '\x00' in file_path:
             return False
-        abs_target = os.path.realpath(file_path)
+        if is_foreign_path(file_path):
+            return False
+        abs_target = os.path.realpath(normalize_path(file_path))
         allowed_roots = [
             os.path.realpath(os.path.join(os.path.dirname(__file__), '..')),
             os.path.realpath(tempfile.gettempdir())
@@ -375,7 +378,7 @@ def is_path_allowed(file_path):
                     cfg = json.load(f)
                     vault = cfg.get('obsidian_vault_path')
                     if vault:
-                        allowed_roots.append(os.path.realpath(vault))
+                        allowed_roots.append(os.path.realpath(to_linux_path(vault)))
         except Exception:
             pass
 
@@ -394,6 +397,7 @@ def safe_write_file(file_path, content, approved=False):
     if not is_path_allowed(file_path):
         print(f"[SECURITY WARNING] File write blocked outside allowed directories: {file_path}")
         return False
+    file_path = normalize_path(file_path)  # open() must see the path the guard approved
     if is_dry_run():
         print(f"[DRY RUN] Would write to {file_path}")
         preview_diff(file_path, content)
@@ -413,6 +417,7 @@ def safe_delete_file(file_path, approved=False):
     if not is_path_allowed(file_path):
         print(f"[SECURITY WARNING] File delete blocked outside allowed directories: {file_path}")
         return False
+    file_path = normalize_path(file_path)
     if is_dry_run():
         print(f"[DRY RUN] Would delete {file_path}")
         return False

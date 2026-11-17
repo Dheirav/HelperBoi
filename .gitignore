@@ -24,3 +24,6 @@ config.json
 # Atomic-write leftovers and scratch runners
 *.tmp.*
 _tmp_*
+
+# Output of tools/run-tests.sh
+.test-run/

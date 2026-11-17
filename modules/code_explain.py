@@ -4,6 +4,7 @@ import ast
 from modules.llm_client import call_ollama as shared_call_ollama
 
 from modules.model_router import get_llm_model as router_get_llm_model
+from modules.platform_compat import ollama_endpoint
 
 def get_llm_model(model_id=None):
     """Retrieve model info from model_router and check availability in Ollama. Fallback to 'mistral' if unavailable."""
@@ -11,7 +12,7 @@ def get_llm_model(model_id=None):
     # Check if the model is available in Ollama
     try:
         import requests
-        endpoint = model_info.get("endpoint", "http://localhost:11434")
+        endpoint = model_info.get("endpoint") or ollama_endpoint()
         model_name = model_info.get("model", "")
         model_base = model_name.split(":")[0]  # Base model name e.g. 'mistral'
         resp = requests.get(f"{endpoint}/api/tags", timeout=5)

@@ -2,6 +2,7 @@ from modules.backup import backup_vault  # 👈 NEW
 from modules.model_router import select_best_model_for_task, get_llm_model, LLM_MODELS
 from modules import memory as mem
 from modules import daemon_control, feature_manager
+from modules.platform_compat import ollama_endpoint, to_linux_path
 from modules import vector_search
 from modules.llm_client import call_ollama as shared_call_ollama
 import json
@@ -32,13 +33,15 @@ def load_config():
 config_data = load_config() if os.path.exists("config.json") else {}
 # No baked-in default: the vault sits somewhere different on every machine.
 # Set obsidian_vault_path in config.json, or the OBSIDIAN_VAULT_PATH env var.
-OBSIDIAN_VAULT_PATH = (
+# A C:/ path in config.json is translated to /mnt/c/ under WSL, so one config
+# file works from either side.
+OBSIDIAN_VAULT_PATH = to_linux_path(
     config_data.get("obsidian_vault_path")
     or os.environ.get("OBSIDIAN_VAULT_PATH", "")
 )
 
 # --- LLM integration helpers ---
-def call_ollama_mistral(prompt, endpoint="http://localhost:11434", model="mistral:latest"):
+def call_ollama_mistral(prompt, endpoint=ollama_endpoint(), model="mistral:latest"):
     """
     Calls the local Ollama server with the Mistral model for a prompt and returns the response.
     """
@@ -327,7 +330,7 @@ class OllamaServerManager:
         start = time.time()
         while time.time() - start < timeout:
             try:
-                resp = requests.get("http://localhost:11434/api/tags", timeout=2)
+                resp = requests.get(f"{ollama_endpoint()}/api/tags", timeout=2)
                 if resp.status_code == 200:
                     return True
             except Exception:
