@@ -12,8 +12,10 @@ Portfolio first. Open source if it holds up. Success means a stranger installs i
 
 | Item | State |
 |---|---|
-| Repo | clone of HelperBoi with history, in `~/Code/HelperBoi` (renamed from Jarvis on 2026-11-18, strings renamed too, wake word kept). Remote `helperboi` points at GitHub `Dheirav/HelperBoi`. There is no `origin`, so a bare `git push` goes nowhere. Nothing is pushed. |
-| WSL port | committed as `41888fa`. 174 adversarial tests pass (107 s), 24 platform tests pass. Details in the commit message. |
+| Repo | clone of HelperBoi with history, in `~/Code/HelperBoi` (renamed from Jarvis on 2026-11-18, strings renamed too, wake word kept). Remote `helperboi` points at GitHub `Dheirav/HelperBoi`. `main` has no upstream (removed 2026-11-18, because a clone had left it tracking the remote), so a push has to name its target. **Nothing is pushed.** The GitHub repo is PUBLIC and its `main` had one commit we lacked (`400f09d`, a one-line README change from 2026-09-04). It was merged in (commit 53e526b), not rebased, so the freeze hash below stays valid. A push is now a fast-forward and needs the user's explicit approval. |
+| Commits (oldest first) | `41888fa` WSL port, `eb83325` rename and optional PyTorch, `2262457` design docs (the frozen content), `9161083` freeze record, `7e4a88b` CI workflow, 53e526b merge of remote main. After the rename: 174 adversarial tests pass (109 s), 24 platform tests pass. |
+| Evaluation freeze | version 1 of `docs/EVAL.md` and `eval/tasks.json` is frozen at `2262457`. Verify with `git diff 2262457 HEAD -- docs/EVAL.md eval/tasks.json` (two lines). |
+| CI | `.github/workflows/ci.yml` runs both suites on windows-latest and ubuntu-latest. It has never run, because nothing is pushed. A red Windows job on the first run is expected. The YAML parses. |
 | Windows native | NOT tested. The Windows branches of `modules/platform_compat.py` ran only with patched flags and through the original HelperBoi code. |
 | Planning documents | `docs/DESIGN.md`, `docs/EVAL.md`, `docs/THREAT-MODEL.md`, `docs/MODELS.md`, `docs/QUIZ.md`, `eval/tasks.json`, this file. See `git log` for the commits and the freeze record. |
 | Code for the redesign | none yet. M1 is the first code. |
@@ -32,7 +34,7 @@ Portfolio first. Open source if it holds up. Success means a stranger installs i
 
 M1: the typed tool registry, the permission broker with undo, the unified path guard, the `files` skill, and an evaluation runner validated with a scripted fake model. The first tests to add are the Windows path cases in docs/THREAT-MODEL.md (junctions, alternate data streams, reserved names, 8.3 names). The runner needs a progress reader (done out of total, elapsed, ETA from the measured rate) before it is first run.
 
-Before M2: freeze the task set and thresholds by writing the commit hash into docs/EVAL.md.
+Pending, needs the user: approve the push (to the existing public repo `Dheirav/HelperBoi`, fast-forward, no force) so the CI can run. Until then Windows native stays untested.
 
 ## Findings kept from earlier work
 
